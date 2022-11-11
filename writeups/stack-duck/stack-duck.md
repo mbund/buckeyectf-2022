@@ -1,5 +1,6 @@
 # stack duck (ath0)
 This challenge comes with a meme as a hint:
+
 ![stack-duck](stack-duck.png)
 
 ## Exploration
@@ -122,7 +123,7 @@ if ((DuckCounter & 0x1f) == 0x1e) {
 }
 ```
 
-We increment `DuckCounter` every time we call the function, and then if `(DuckCounter & 0x1f) == 0x1e` is true we continue. So calling the function `0x1e=30` times will allow us to continue. Then, it looks like the regular canary check happens, but there is actually a subtle difference, there is a `(char)` cast on `lVar1`, meaning that only one byte will be compared. Now if the cookie is random we have a 1/256 chance of guessing the right chance, so on average all we have to do is run the program 256 times to win (before if we simply tried guessing the canary value we would have to guess a 64 bit value which is not feasible). But it is actually far better than this, because for some reason the value that it compares to always turns out to be 0 (found in gdb). So if we pass along a null byte in our exploit in the correct place in stack we can pass the canary check and return to the `win` function. Lets ready write the exploit.
+We increment `DuckCounter` every time we call the function, and then if `(DuckCounter & 0x1f) == 0x1e` is true we continue. So calling the function `0x1e=30` times will allow us to continue. Then, it looks like the regular canary check happens, but there is actually a subtle difference, there is a `(char)` cast on `lVar1`, meaning that only one byte will be compared. Now if the canary is random we have a 1/256 chance of guessing the right chance, so on average all we have to do is run the program 256 times to win (before if we simply tried guessing the canary value we would have to guess a 64 bit value which is not feasible). But it is actually far better than this, because for some reason the value that it compares to always turns out to be 0 (found in gdb). So if we put a null byte in our exploit can pass the canary check and return to the `win` function. Lets write the exploit.
 
 ```python
 from pwn import *

@@ -150,7 +150,7 @@ log.info(f"{leak=:02x}")
 
 I have no idea what it is actually pointing to and I don't care. Since I have a leak to a stable address on the stack, I can use gdb to find the offset of this address on the stack to the first byte of the first instruction which is also on the stack. This offset will always be the same.
 
-Now we can set 2 to `dir`, which calls `encounter`, which has a buffer overflow. We can return to the shellcode we placed in the buffer earlier, calculating the address using the offset.
+Now we can set `dir` to 2, which calls `encounter`, which has a buffer overflow. We can return to the shellcode we placed in the buffer earlier, calculating the address using the offset.
 ```python
 # the offset of the leaked stack address to the beginning of our shellcode
 # which is in the earlier buffer
@@ -237,7 +237,7 @@ $
 ```
 
 ## A note on debugging
-The `scroll` serves as our `puts` alternative, and otherwise prints a lot of stuff to the screen, but it sleeps for a long time and is a very unpleasant debugging experience. We can use `pwntools` `gdb.attach` to execute a gdb commands on the bianary when we run it which allows us to skip the function. Basically, we set the first instruction of `usleep` to be `0xc3` which is `ret`, so the real underlying function of `usleep` is never called, and `scroll` will print everything immediately without needing to wait so long every time the binary is run.
+The `scroll` serves as our `puts` alternative but it sleeps for a long time and is a very unpleasant debugging experience. We can use `pwntools` `gdb.attach` to execute a gdb commands on the binary when we run it which allows us to skip the function. Basically, we set the first instruction of `usleep` to be `0xc3` which is `ret`, so the real underlying function of `usleep` is never called, and `scroll` will print everything immediately without needing to wait so long every time the binary is run.
 
 ```python
 gdb.attach(r, '''

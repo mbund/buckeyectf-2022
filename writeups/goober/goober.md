@@ -150,7 +150,7 @@ In essence it passes through these steps
 Now that we have our constraints, we can begin to craft a payload.
 
 ## Exploit
-From prior knowledge, we know that SVGs are just XML, so lets begin crafting an svg and start coming up with ways to make network requests inside of an SVG.
+From prior knowledge we know that SVGs are just XML, so lets begin crafting an svg and start coming up with ways to make network requests inside of an SVG.
 
 How about an image?
 ```xml
@@ -162,7 +162,7 @@ How about an image?
 
 Great! The fact that this image was rendered successfully means that our crafted SVG successfully made a network request on the server, to another server (mozilla.org). Now that we can do that, we just need to make a request to `http://goober-internal:5001/flag` inside our SVG to get the flag. However, this doesn't work, because we need the request to send back an image, and not just text. To continue we are going to have to look at another one of the constraints.
 
-But why does the server remove `<!DOCTYPE[^>[]*(\[[^]]*\])?>` from our upload? It looks like the beginning of an html document...but we are uploading an SVG. They're both kinda XML I guess? [Lets look it up](https://www.google.com/search?q=%3C%21DOCTYPE%3E+xml+vulnerability). We immediately find out about XML External Entity (XXE) attacks, and how we can use them. Here's an example payload:
+Why does the server remove `<!DOCTYPE[^>[]*(\[[^]]*\])?>` from our upload? It looks like the beginning of an html document...but we are uploading an SVG. They're both kinda XML I guess? [Lets look it up](https://www.google.com/search?q=%3C%21DOCTYPE%3E+xml+vulnerability). We immediately find out about XML External Entity (XXE) attacks, and how we can use them. Here's an example payload:
 
 ```xml
 <!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>

@@ -21,7 +21,7 @@ flowchart TD
     User -->|GET /some/page| HAProxy
 ```
 
-The Flask webserver in `src/app.py` defines many routes. Many interact with MongoDB but it will turn out to not matter. Here are some examples routes.
+The Flask webserver in `src/app.py` defines many routes. It interacts with MongoDB but that will turn out to not matter, there are no database access concerns. Here are some examples routes.
 ```python
 @app.route("/admin/api/delete/<longpath>", methods=['DELETE'])
 def deleteURL(longpath):
@@ -74,7 +74,7 @@ Basically, if the path begins with (case insensitive) `/admin` it will reject it
 
 ## Exploit
 
-What if we can come up with a path which does not being with `/admin`, but still can take us to `/admin/api/logs?path=/flag.txt`? We can look for a discrepancy between HAProxy's `path_beg -i` and the `@app.route()` in Flask to see if we can coerce HAProxy to let us through, and have Flask interpret it as a still a valid url and call the right function.
+What if we can come up with a path which does not begin with `/admin`, but still can take us to `/admin/api/logs?path=/flag.txt`? We can look for a discrepancy between HAProxy's `path_beg -i` and the `@app.route()` in Flask to see if we can coerce HAProxy to let us through, and have Flask interpret it as a valid url and call the right function.
 
 The answer is to go to `//admin/api/logs?path=/flag.txt`. Notice the extra `/` at the beginning. HAProxy does a simple check, does the path `//admin/api/logs?path=/flag.txt` begin wih `/admin`? No, it does not. So forward the request to Flask. Then Flask parses `//admin/api/logs?path=/flag.txt` as `/admin/api/logs?path=/flag.txt` and calls `getLog()` which in turn calls `readLog("/flag.txt")` and gives us the flag.
 

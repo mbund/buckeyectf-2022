@@ -181,7 +181,7 @@ function designateOwner() public {
 }
 ```
 
-There's some pretty suspicious code in `_canBeDesignator`, I wonder what it is about. After some googling I came across this great website overall, and specifically [this article here](https://consensys.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/extcodesize-checks) which just straight up tells us how to exploit it.
+There's some pretty suspicious code in `_canBeDesignator`, I wonder what it is about. After some googling I came across this great website, and specifically [this article here](https://consensys.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/extcodesize-checks) which just straight up tells us how to exploit it.
 
 The `extcodesize` is supposed to check if our contract contains code, in which case it is not a user interacting with the contract but rather another smart contract. To bypass this check we just need to put our code into the constructor of our `Attacker` contract. We can also see that by running `register` we can get a balance of 50 which is enough to pass the second check of `designateOwner`.
 ```sol
@@ -202,7 +202,7 @@ contract Attacker {
 }
 ```
 
-Now that we are a designator, we can initiate a `playRound` ourselves. We don't know or control what `nextVal` is, so we can't just win on our first try. To become the `selector` to be able to set the next number is in these functions:
+Now that we are a designator, we can initiate a `playRound` ourselves. We don't know or control what `nextVal` is, so we can't just win on our first try. Only the `selector` can decide what `nextVal` will be, and the code to become the `selector` is in these functions:
 ```sol
 function setNextSelector(address _selector) public onlyDesignators {
     require(_selector != msg.sender);
@@ -216,7 +216,7 @@ function setNextNumber(uint8 value) public {
 }
 ```
 
-To be honest, I don't feel like bypassing these security checks though. We've actually already gathered enough information to beat the contract already. We don't control `nextVal` but it must be some number between 0 and 63, so worst case scenario we can guess and run the contract 64 times on average. But it is actually far easier than that because `nextVal` is the same number across multiple bids and is not changed unless someone else actually has made themselves the selector and set the next number. We can run out attacker contract once with a random guess, then debug the contract to get the persistent value of `nextVal` and run our attack again but this time with the correct value of `nextVal` and get enough funds to get the flag.
+To be honest, I don't feel like bypassing these security checks though. We've actually already gathered enough information to beat the contract already. We don't control `nextVal` but it must be some number between 0 and 63, so worst case scenario we can guess and run the contract 64 times on average. But it is actually far easier than that because `nextVal` is the same number across multiple bids and is not changed unless someone else actually has made themselves the selector and set the next number. We can run our attacker contract once with a random guess, then debug the contract to get the persistent value of `nextVal` and run our attack again but this time with the correct value of `nextVal` and get enough funds to get the flag.
 
 Here is the complete attacker contract:
 ```sol
